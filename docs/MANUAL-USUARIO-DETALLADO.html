@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manual de usuario — Cálculo en Movimiento</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", "Nunito", Arial, sans-serif;
+      color: #2f2430;
+      line-height: 1.45;
+      font-size: 11pt;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    h1 { font-size: 22pt; color: #8b4a66; margin: 0 0 6px; }
+    h2 {
+      font-size: 14pt;
+      color: #7a3f5c;
+      border-bottom: 2px solid #e8a4b8;
+      padding-bottom: 4px;
+      margin-top: 22px;
+      page-break-after: avoid;
+    }
+    h3 { font-size: 12pt; color: #5c3d4e; margin-top: 14px; page-break-after: avoid; }
+    p, li { orphans: 3; widows: 3; }
+    .cover {
+      text-align: center;
+      padding: 40px 10px 24px;
+      border: 2px solid #e8a4b8;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff7fb, #fff);
+      margin-bottom: 20px;
+    }
+    .cover .team { color: #7a6570; margin-top: 10px; }
+    .kicker { letter-spacing: 0.12em; text-transform: uppercase; color: #9b7bb8; font-size: 10pt; }
+    .box {
+      background: #fff7fb;
+      border: 1px solid #e8c4d0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 10px 0;
+    }
+    .path {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f4eef2;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10pt;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px;
+      font-size: 10.5pt;
+    }
+    th, td {
+      border: 1px solid #e0cdd5;
+      padding: 7px 8px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #f7e6ec; color: #5c3d4e; }
+    .flow {
+      text-align: center;
+      font-weight: 600;
+      color: #5c3d4e;
+      margin: 12px 0;
+      padding: 10px;
+      background: #faf6f8;
+      border-radius: 10px;
+    }
+    .note { color: #7a6570; font-size: 10pt; }
+    .footer {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #e0cdd5;
+      font-size: 9.5pt;
+      color: #7a6570;
+    }
+    ul { padding-left: 1.2rem; }
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+  <div class="cover">
+    <div class="kicker">Proyecto de aula · Cálculo integral</div>
+    <h1>Manual de usuario detallado</h1>
+    <p style="font-size:14pt;margin:8px 0 0"><strong>Cálculo en Movimiento</strong></p>
+    <p class="team">
+      Greicy Martinez · Mariana Quiroga · Miluska Mancera
+    </p>
+    <p class="note" style="margin-top:14px">
+      Guía para personas que no programan: cómo usar la aplicación y dónde está
+      lo importante en el proyecto (matemática, gestos y visualización).
+    </p>
+  </div>
+
+  <h2>1. ¿Qué es este proyecto?</h2>
+  <p>
+    <strong>Cálculo en Movimiento</strong> es una aplicación web educativa.
+    La docente asigna una función matemática <em>f(x)</em>, un intervalo
+    <em>[a, b]</em> y un eje. El equipo construyó un programa donde
+    <strong>cada número de dedos</strong> (1 a 5) activa un cálculo de
+    cálculo integral y muestra una gráfica o un sólido 3D.
+  </p>
+  <div class="box">
+    <strong>Idea central:</strong> el gesto elige el <em>concepto</em>;
+    el programa calcula la <em>integral</em> y muestra el <em>resultado</em>
+    con fórmula y unidades.
+  </div>
+
+  <h2>2. Cómo usar la aplicación (sin programar)</h2>
+  <h3>2.1 Abrirla</h3>
+  <ul>
+    <li><strong>En internet (recomendado):</strong> el enlace de GitHub Pages del equipo
+      (cuando esté activo), por ejemplo:
+      <span class="path">https://gmartinez109-hue.github.io/Calculo-en-Movimiento/</span>
+    </li>
+    <li><strong>En el computador:</strong> abrir la carpeta del proyecto en VS Code,
+      abrir una terminal y escribir:
+      <span class="path">npx --yes serve -l 5173</span>
+      Luego ir a <span class="path">http://localhost:5173</span>
+    </li>
+  </ul>
+
+  <h3>2.2 Pantalla de bienvenida</h3>
+  <ol>
+    <li>Pulsa <strong>Activar cámara</strong> y acepta el permiso, <strong>o</strong></li>
+    <li>Pulsa <strong>Continuar sin cámara</strong> y usa los botones 1–5.</li>
+  </ol>
+
+  <h3>2.3 Cargar el problema que asigne la docente</h3>
+  <ol>
+    <li>En <strong>Problema asignado</strong> escribe la función (ej. <span class="path">x^2</span>).</li>
+    <li>Escribe los valores de <strong>a</strong> y <strong>b</strong>.</li>
+    <li>Elige el <strong>eje</strong> (x o y).</li>
+    <li>Pulsa <strong>Aplicar problema</strong>.</li>
+  </ol>
+
+  <h3>2.4 Gestos con la cámara</h3>
+  <ul>
+    <li>Mano <strong>derecha</strong>, <strong>palma</strong> hacia la cámara, dedos hacia arriba.</li>
+    <li>Muestra 1–5 dedos y <strong>sostén 1,5 segundos</strong> hasta que se confirme.</li>
+    <li>Para cambiar de gesto: haz <strong>puño</strong> y luego el nuevo número de dedos.</li>
+    <li>En gestos 1–4 el pulgar va metido; en el 5 abre también el pulgar.</li>
+  </ul>
+
+  <table>
+    <thead>
+      <tr><th>Dedos</th><th>Concepto</th><th>Qué verás</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Área bajo la curva</td><td>Gráfica 2D sombreada</td></tr>
+      <tr><td>2</td><td>Volumen (eje x)</td><td>Sólido 3D con partículas</td></tr>
+      <tr><td>3</td><td>Volumen (eje y)</td><td>Sólido 3D con partículas</td></tr>
+      <tr><td>4</td><td>Área superficial</td><td>Sólido/cáscara 3D</td></tr>
+      <tr><td>5</td><td>Longitud de arco</td><td>Curva 2D resaltada</td></tr>
+    </tbody>
+  </table>
+  <p class="note">
+    Los botones 1–5 y las teclas del teclado hacen lo mismo que los gestos.
+    Si la cámara falla, úsalos sin problema: el resultado matemático es el mismo.
+  </p>
+
+  <h2>3. La ruta de lo importante (mapa simple)</h2>
+  <div class="flow">
+    Tú eliges un gesto o botón (1–5)<br />
+    ↓<br />
+    El programa reconoce el número (cámara) o lee el botón<br />
+    ↓<br />
+    El motor matemático calcula la integral<br />
+    ↓<br />
+    Se muestra el resultado (fórmula + número) y la visualización
+  </div>
+  <p>
+    Quien coordina todo eso es el archivo <span class="path">js/main.js</span>
+    (el “cerebro” de la app).
+  </p>
+
+  <div class="page-break"></div>
+
+  <h2>4. Dónde está el modelo matemático</h2>
+  <p>
+    Todo el cálculo vive en la carpeta <span class="path">js/math/</span>.
+    No necesitas entender programación: solo saber <strong>qué archivo corresponde
+    a cada gesto</strong> para explicar a la profesora.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Archivo</th><th>Para qué sirve</th><th>Gesto</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="path">js/math/index.js</span></td>
+        <td>Une cada número 1–5 con su cálculo</td>
+        <td>Todos</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/parser.js</span></td>
+        <td>Lee la fórmula escrita de f(x) (ej. x^2)</td>
+        <td>Todos</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/integrate.js</span></td>
+        <td>Integra con la regla de Simpson (precisión)</td>
+        <td>Todos</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/area.js</span></td>
+        <td>Área: integral con signo y área geométrica</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/volume.js</span></td>
+        <td>Volumen por discos (eje x) o capas (eje y)</td>
+        <td>2 y 3</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/surface.js</span></td>
+        <td>Área de la superficie de revolución</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/arc-length.js</span></td>
+        <td>Longitud de arco de la curva</td>
+        <td>5</td>
+      </tr>
+      <tr>
+        <td><span class="path">js/math/roots.js</span></td>
+        <td>Busca cruces con el eje x (para el área)</td>
+        <td>1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <strong>Qué decir en la exposición:</strong>
+    “El número que aparece en pantalla no es inventado: sale de la integral
+    correspondiente, calculada con Simpson sobre la función que asignó la docente.
+    Si abre el archivo del gesto (por ejemplo area.js), arriba hay una cabecera
+    que explica el concepto en español.”
+  </div>
+
+  <h3>Fórmulas (referencia rápida)</h3>
+  <ul>
+    <li><strong>1 · Área:</strong> ∫ₐᵇ f(x) dx · área geométrica = Σ |∫| si cruza el eje x</li>
+    <li><strong>2 · Volumen eje x:</strong> V = π ∫ₐᵇ [f(x)]² dx (discos)</li>
+    <li><strong>3 · Volumen eje y:</strong> V = 2π ∫ₐᵇ x f(x) dx (capas)</li>
+    <li><strong>4 · Superficie (eje x):</strong> S = 2π ∫ₐᵇ |f(x)| √(1+[f'(x)]²) dx</li>
+    <li><strong>5 · Arco:</strong> L = ∫ₐᵇ √(1+[f'(x)]²) dx</li>
+  </ul>
+
+  <h2>5. Dónde está el reconocimiento de los dedos</h2>
+  <p>
+    El archivo principal es <span class="path">js/gesture-engine.js</span>.
+  </p>
+  <ul>
+    <li>Pide permiso de cámara y detecta la mano (tecnología MediaPipe, cargada desde <span class="path">index.html</span>).</li>
+    <li>Cuenta los dedos y exige sostener el gesto ~1,5 s.</li>
+    <li>Con <strong>puño</strong> libera el modo para poder cambiar a otro gesto.</li>
+    <li>Cuando confirma el número, avisa a <span class="path">js/main.js</span>, que dispara el cálculo.</li>
+  </ul>
+  <div class="box">
+    <strong>Qué decir:</strong>
+    “La cámara solo elige qué cálculo hacer. La matemática real está en la carpeta math.
+    Si la cámara falla, los botones 1–5 hacen exactamente lo mismo.”
+  </div>
+
+  <h2>6. Dónde está la visualización</h2>
+  <table>
+    <thead>
+      <tr><th>Qué se ve</th><th>Archivo</th><th>Gestos</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Gráfica 2D (curva, área, arco)</td>
+        <td><span class="path">js/viz/plot-2d.js</span></td>
+        <td>1 y 5</td>
+      </tr>
+      <tr>
+        <td>Sólido 3D con partículas</td>
+        <td><span class="path">js/viz/solid-particles.js</span></td>
+        <td>2, 3 y 4</td>
+      </tr>
+      <tr>
+        <td>Panel de fórmula y número</td>
+        <td><span class="path">js/ui/results.js</span></td>
+        <td>Todos</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Las partículas 3D <strong>ilustran</strong> el sólido (inspiradas en el demo de la docente),
+    pero <strong>no calculan</strong> el volumen: el valor numérico siempre sale del motor matemático.
+  </p>
+
+  <div class="page-break"></div>
+
+  <h2>7. Qué abrir en VS Code para explicar (ruta práctica)</h2>
+  <ol>
+    <li>Abre la carpeta del proyecto en VS Code.</li>
+    <li>En el panel izquierdo entra a <span class="path">js</span>.</li>
+    <li>Para la demo oral, abre solo estos archivos (cada uno tiene una
+      <strong>cabecera en español</strong> al inicio):
+      <ul>
+        <li><span class="path">js/main.js</span> — cómo se conecta todo</li>
+        <li><span class="path">js/gesture-engine.js</span> — dedos / cámara</li>
+        <li><span class="path">js/math/area.js</span> (o volume / surface / arc-length según el gesto)</li>
+        <li><span class="path">js/viz/plot-2d.js</span> y <span class="path">js/viz/solid-particles.js</span> — gráficas</li>
+      </ul>
+    </li>
+    <li>No hace falta leer el código línea por línea: lean la cabecera y digan el concepto.</li>
+  </ol>
+
+  <h2>8. Estructura de carpetas (visión general)</h2>
+  <table>
+    <thead>
+      <tr><th>Carpeta / archivo</th><th>En palabras simples</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="path">index.html</span></td><td>La página que se ve en el navegador</td></tr>
+      <tr><td><span class="path">config/</span></td><td>Función de ejemplo y colores del equipo</td></tr>
+      <tr><td><span class="path">js/math/</span></td><td>Modelo matemático (integrales)</td></tr>
+      <tr><td><span class="path">js/gesture-engine.js</span></td><td>Reconocimiento de dedos</td></tr>
+      <tr><td><span class="path">js/viz/</span></td><td>Visualización 2D y 3D</td></tr>
+      <tr><td><span class="path">js/ui/</span></td><td>Textos, botones, panel de resultados</td></tr>
+      <tr><td><span class="path">docs/</span></td><td>Guiones, manuales y este material</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9. Problemas frecuentes</h2>
+  <table>
+    <thead>
+      <tr><th>Problema</th><th>Qué hacer</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>No pide la cámara / error de permiso</td><td>Usar botones 1–5; revisar permisos del navegador</td></tr>
+      <tr><td>Los dedos “saltan”</td><td>Palma a la cámara, sostener 1,5 s; cambiar solo con puño</td></tr>
+      <tr><td>Página en blanco al abrir el HTML directo</td><td>No abrir como archivo suelto; usar Pages o <span class="path">npx serve</span></td></tr>
+      <tr><td>No veo el sólido de partículas</td><td>Probar botones 2, 3 o 4 (el 1 es gráfica 2D) y recargar con Ctrl+F5</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10. Frase de cierre para la exposición</h2>
+  <div class="box">
+    “Nuestra aplicación convierte un gesto de la mano en un concepto de cálculo integral.
+    La cámara solo selecciona la operación; el motor matemático calcula la integral
+    de la función asignada; la visualización ayuda a entender el resultado.”
+  </div>
+
+  <div class="footer">
+    Documento generado para el equipo Greicy Martinez, Mariana Quiroga y Miluska Mancera ·
+    Proyecto “Cálculo en Movimiento” · Manual orientado a usuarias no programadoras.
+  </div>
+
+</body>
+</html>
