@@ -29,8 +29,8 @@ export function computeSurface(f, a, b, axis = "x", n = 800) {
 
   return {
     mode: "surface",
-    title: `Área superficial (eje ${ax})`,
-    concept: "Superficie de revolución",
+    title: `Área superficial — eje ${ax}`,
+    concept: "Área superficial de revolución",
     formula:
       ax === "x"
         ? "S = 2π ∫_a^b |f(x)| √(1+[f'(x)]²) dx"
@@ -41,6 +41,6 @@ export function computeSurface(f, a, b, axis = "x", n = 800) {
     method: `Simpson (n=${res.n}) + derivada numérica centrada`,
     estimateError: res.estimateError != null ? 2 * Math.PI * res.estimateError : null,
     axis: ax,
-    note: `Superficie generada al girar la curva alrededor del eje ${ax}.`,
+    note: `Área superficial (cascarón hueco) al girar la curva alrededor del eje ${ax}. No es un volumen lleno.`,
   };
 }

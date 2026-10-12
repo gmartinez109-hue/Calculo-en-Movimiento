@@ -8,7 +8,10 @@
  */
 import { sampleCurve } from "../math/index.js";
 
-const N = 14000;
+/** Buffer máximo = Vol. X (64k). Vol. Y y superficie usan 32k. */
+const MAX_N = 64000;
+const N_VOLUME_X = 64000;
+const N_DEFAULT = 32000;
 const ROT_SPEED = 0.014;
 
 let ready = false;
@@ -20,6 +23,11 @@ let containerEl = null;
 let titleEl = null;
 let visible = false;
 let rotY = 0;
+let activeCount = N_DEFAULT;
+
+function particleCountForMode(mode) {
+  return mode === "volume_x" ? N_VOLUME_X : N_DEFAULT;
+}
 
 function mkCircleTex() {
   const c = document.createElement("canvas");
@@ -46,17 +54,17 @@ function makeAxisLabel(text, color) {
   ctx.fillStyle = color;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = 0.9;
   ctx.fillText(text, 64, 32);
   const tex = new THREE.CanvasTexture(c);
   const matSprite = new THREE.SpriteMaterial({
     map: tex,
     transparent: true,
     depthWrite: false,
-    opacity: 0.7,
+    opacity: 0.95,
   });
   const sprite = new THREE.Sprite(matSprite);
-  sprite.scale.set(0.9, 0.45, 1);
+  sprite.scale.set(1.05, 0.52, 1);
   return sprite;
 }
 
@@ -72,37 +80,39 @@ function makeWatermarkAxes(length = 4.2) {
     const matLine = new THREE.LineBasicMaterial({
       color: colorHex,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.82,
       depthWrite: false,
     });
     return new THREE.Line(geoLine, matLine);
   };
 
-  // Ejes sutiles (marca de agua)
-  group.add(mkLine(new THREE.Vector3(length, 0, 0), 0xffb7c9)); // x
-  group.add(mkLine(new THREE.Vector3(0, length, 0), 0xc9b6e4)); // y
-  group.add(mkLine(new THREE.Vector3(0, 0, length), 0xa8d4ff)); // z
-  group.add(mkLine(new THREE.Vector3(-length * 0.35, 0, 0), 0xffb7c9));
-  group.add(mkLine(new THREE.Vector3(0, -length * 0.2, 0), 0xc9b6e4));
-  group.add(mkLine(new THREE.Vector3(0, 0, -length * 0.35), 0xa8d4ff));
+  // Ejes del plano cartesiano — más marcados
+  group.add(mkLine(new THREE.Vector3(length, 0, 0), 0xe84a7a)); // x
+  group.add(mkLine(new THREE.Vector3(0, length, 0), 0x7a4fd4)); // y
+  group.add(mkLine(new THREE.Vector3(0, 0, length), 0x2a8fd4)); // z
+  group.add(mkLine(new THREE.Vector3(-length * 0.35, 0, 0), 0xe84a7a));
+  group.add(mkLine(new THREE.Vector3(0, -length * 0.2, 0), 0x7a4fd4));
+  group.add(mkLine(new THREE.Vector3(0, 0, -length * 0.35), 0x2a8fd4));
 
-  // Rejilla suave en plano XZ
-  const grid = new THREE.GridHelper(length * 1.6, 8, 0xffffff, 0xffffff);
+  // Rejilla del plano XZ — más visible
+  const grid = new THREE.GridHelper(length * 1.6, 12, 0x9b7bb8, 0xb8a0b0);
   grid.material.transparent = true;
-  grid.material.opacity = 0.07;
+  grid.material.opacity = 0.48;
   grid.material.depthWrite = false;
   group.add(grid);
 
-  const lx = makeAxisLabel("x", "rgba(255,200,220,0.95)");
+  const lx = makeAxisLabel("x", "rgba(220,50,100,0.98)");
   lx.position.set(length + 0.35, 0.05, 0);
   group.add(lx);
 
-  const ly = makeAxisLabel("y", "rgba(220,200,255,0.95)");
+  const ly = makeAxisLabel("y", "rgba(100,60,200,0.98)");
   ly.position.set(0.1, length + 0.35, 0);
   group.add(ly);
 
-  const lz = makeAxisLabel("z", "rgba(180,220,255,0.95)");
-  lz.position.set(0, 0.05, length + 0.35);
+  // z abajo del plano (no entre cámara y sólido) + color acorde a la rejilla
+  const lz = makeAxisLabel("z", "rgba(155,123,184,0.95)");
+  lz.position.set(0.15, -0.55, -(length + 0.25));
+  lz.scale.set(0.85, 0.42, 1);
   group.add(lz);
 
   return group;
@@ -135,38 +145,41 @@ function ensureInit(containerId = "plot3d") {
   const h = Math.max(containerEl.clientHeight, 320);
 
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 200);
-  camera.position.set(0, 1.2, 9);
+  camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 200);
+  camera.position.set(0, 1.2, 7.5);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setSize(w, h);
-  renderer.setClearColor(0x000000, 0);
+  // Tono claro translúcido acorde al concepto pastel
+  renderer.setClearColor(0xf7eaf3, 0.55);
   containerEl.appendChild(renderer.domElement);
 
   const tex = mkCircleTex();
   geo = new THREE.BufferGeometry();
-  pos = new Float32Array(N * 3);
-  tgt = new Float32Array(N * 3);
-  col = new Float32Array(N * 3);
-  tcol = new Float32Array(N * 3);
+  pos = new Float32Array(MAX_N * 3);
+  tgt = new Float32Array(MAX_N * 3);
+  col = new Float32Array(MAX_N * 3);
+  tcol = new Float32Array(MAX_N * 3);
 
-  for (let i = 0; i < N * 3; i++) {
+  for (let i = 0; i < MAX_N * 3; i++) {
     pos[i] = (Math.random() - 0.5) * 8;
     col[i] = 0.8;
   }
 
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  geo.setDrawRange(0, activeCount);
 
   mat = new THREE.PointsMaterial({
-    size: 0.07,
+    size: 0.038,
     map: tex,
     vertexColors: true,
     transparent: true,
     opacity: 0.92,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
     depthWrite: false,
+    sizeAttenuation: true,
   });
 
   points = new THREE.Points(geo, mat);
@@ -185,8 +198,9 @@ function onResize() {
   const w = Math.max(containerEl.clientWidth, 320);
   const h = Math.max(containerEl.clientHeight, 320);
   camera.aspect = w / h;
-  camera.updateProjectionMatrix();
   renderer.setSize(w, h);
+  if (visible) fitCameraToTargets();
+  else camera.updateProjectionMatrix();
 }
 
 function animate() {
@@ -196,7 +210,7 @@ function animate() {
   const posAttr = geo.getAttribute("position");
   const colAttr = geo.getAttribute("color");
 
-  for (let i = 0; i < N; i++) {
+  for (let i = 0; i < activeCount; i++) {
     for (let j = 0; j < 3; j++) {
       const idx = i * 3 + j;
       posAttr.array[idx] += (tgt[idx] - posAttr.array[idx]) * 0.08;
@@ -217,10 +231,15 @@ function animate() {
 
 /**
  * mode: volume_x | volume_y | surface
+ * Visual:
+ *   2 volume_x → sólido LLENO (discos, rosa)
+ *   3 volume_y → sólido LLENO (capas, lavanda)
+ *   4 surface  → CASCARÓN hueco (solo superficie, cian)
  */
 function morphSolid(assignment, modeResult) {
   const { f, a, b } = sampleCurve(assignment, 2);
   const mode = modeResult?.mode || "volume_x";
+  const axis = modeResult?.axis === "y" ? "y" : "x";
   const C = new THREE.Color();
   const span = Math.max(b - a, 1e-6);
 
@@ -232,12 +251,27 @@ function morphSolid(assignment, modeResult) {
     if (!Number.isFinite(y)) continue;
     maxR = Math.max(maxR, Math.abs(y), Math.abs(x));
   }
-  const scale = 5.2 / (maxR * 2 || 1);
+  // Escala base moderada; luego la cámara se ajusta al bounding box
+  const scale = 4.2 / (maxR * 2 || 1);
   const xMid = (a + b) / 2;
 
-  mat.size = mode === "surface" ? 0.055 : 0.072;
+  // Muchos puntos finos
+  if (mode === "surface") {
+    mat.size = 0.032;
+    mat.opacity = 0.9;
+  } else if (mode === "volume_y") {
+    mat.size = 0.036;
+    mat.opacity = 0.93;
+  } else {
+    mat.size = 0.038;
+    mat.opacity = 0.94;
+  }
+  mat.blending = THREE.NormalBlending;
 
-  for (let i = 0; i < N; i++) {
+  activeCount = particleCountForMode(mode);
+  geo.setDrawRange(0, activeCount);
+
+  for (let i = 0; i < activeCount; i++) {
     const x = a + span * Math.random();
     const fx = f(x);
     if (!Number.isFinite(fx)) {
@@ -249,48 +283,122 @@ function morphSolid(assignment, modeResult) {
     let px;
     let py;
     let pz;
+    let shade;
 
     if (mode === "volume_y") {
+      // LLENO: capas cilíndricas alrededor del eje y
       const R = Math.abs(x);
-      const rr = R * Math.sqrt(Math.random());
+      const rr = R * Math.sqrt(Math.random()); // relleno del disco
       px = rr * Math.cos(theta);
       py = fx;
       pz = rr * Math.sin(theta);
+      shade = Math.min(1, rr / (maxR || 1));
+      C.setHSL(0.74 - shade * 0.06, 0.88, 0.52 + shade * 0.18); // lavanda vivo
     } else if (mode === "surface") {
-      const R = Math.abs(fx);
-      const rr = R * (0.94 + 0.06 * Math.random());
-      px = x;
-      py = rr * Math.cos(theta);
-      pz = rr * Math.sin(theta);
+      // CASCARÓN: solo la cáscara (hueco por dentro)
+      if (axis === "y") {
+        const R = Math.abs(x);
+        const rr = R * (0.988 + 0.012 * Math.random());
+        px = rr * Math.cos(theta);
+        py = fx;
+        pz = rr * Math.sin(theta);
+        shade = Math.min(1, Math.abs(fx - a) / span);
+      } else {
+        const R = Math.abs(fx);
+        const rr = R * (0.988 + 0.012 * Math.random());
+        px = x;
+        py = rr * Math.cos(theta);
+        pz = rr * Math.sin(theta);
+        shade = Math.min(1, (x - a) / span);
+      }
+      C.setHSL(0.52 - shade * 0.05, 0.9, 0.5 + shade * 0.14); // cian vivo
     } else {
+      // LLENO: discos alrededor del eje x — 64k puntos
       const R = Math.abs(fx);
-      const rr = R * Math.sqrt(Math.random());
+      const rr = R * Math.sqrt(Math.random()); // relleno del disco
       px = x;
       py = rr * Math.cos(theta);
       pz = rr * Math.sin(theta);
+      shade = Math.min(1, rr / (maxR || 1));
+      C.setHSL(0.95 - shade * 0.08, 0.9, 0.52 + shade * 0.16); // rosa vivo
     }
 
-    tgt[i * 3] = (px - (mode === "volume_y" ? 0 : xMid)) * scale;
+    tgt[i * 3] = (px - (mode === "volume_y" || (mode === "surface" && axis === "y") ? 0 : xMid)) * scale;
     tgt[i * 3 + 1] = py * scale;
     tgt[i * 3 + 2] = pz * scale;
-
-    const shade =
-      mode === "volume_y"
-        ? Math.min(1, Math.hypot(px, pz) / (maxR || 1))
-        : Math.min(1, Math.hypot(py, pz) / (maxR || 1));
-    C.setHSL(0.92 - shade * 0.2, 0.58, 0.52 + shade * 0.18);
     setCol(i, C);
   }
 
-  camera.position.set(0, 1.35, 8.6);
-  camera.lookAt(0, 0, 0);
+  fitCameraToTargets();
+}
+
+/** Ajusta la cámara para que el sólido quepa completo en el contenedor. */
+function fitCameraToTargets() {
+  let minX = Infinity;
+  let minY = Infinity;
+  let minZ = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  let maxZ = -Infinity;
+
+  for (let i = 0; i < activeCount; i++) {
+    const x = tgt[i * 3];
+    const y = tgt[i * 3 + 1];
+    const z = tgt[i * 3 + 2];
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (z < minZ) minZ = z;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+    if (z > maxZ) maxZ = z;
+  }
+
+  if (!Number.isFinite(minX)) {
+    camera.position.set(0, 1.2, 7.5);
+    camera.lookAt(0, 0, 0);
+    camera.fov = 50;
+    camera.updateProjectionMatrix();
+    return;
+  }
+
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  const cz = (minZ + maxZ) / 2;
+  const sizeX = Math.max(maxX - minX, 0.2);
+  const sizeY = Math.max(maxY - minY, 0.2);
+  const sizeZ = Math.max(maxZ - minZ, 0.2);
+  const radius = 0.5 * Math.sqrt(sizeX * sizeX + sizeY * sizeY + sizeZ * sizeZ);
+
+  camera.fov = 50;
+  const fovRad = (camera.fov * Math.PI) / 180;
+  const aspect = Math.max(camera.aspect || 1, 0.5);
+  const fitHeight = radius / Math.tan(fovRad / 2);
+  const fitWidth = radius / (Math.tan(fovRad / 2) * aspect);
+  // Margen breve: sólido completo, sin quedar demasiado pequeño
+  const dist = Math.max(fitHeight, fitWidth) * 1.18;
+
+  camera.position.set(cx, cy + radius * 0.08, cz + dist);
+  camera.lookAt(cx, cy, cz);
+  camera.updateProjectionMatrix();
+}
+
+function solidCaption(modeResult) {
+  const mode = modeResult?.mode || "volume_x";
+  if (mode === "surface") {
+    return modeResult?.title || "Área superficial";
+  }
+  if (mode === "volume_y") {
+    return modeResult?.title || "Volumen eje y (sólido lleno)";
+  }
+  return modeResult?.title || "Volumen eje x (sólido lleno)";
 }
 
 export function showParticleSolid(assignment, modeResult) {
   ensureInit("plot3d");
   visible = true;
   containerEl?.classList.remove("hidden");
-  if (titleEl) titleEl.textContent = modeResult?.title || "Sólido de revolución";
+  if (titleEl) titleEl.textContent = solidCaption(modeResult);
   requestAnimationFrame(() => {
     morphSolid(assignment, modeResult);
     onResize();

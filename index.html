@@ -2,10 +2,8 @@
 <!--
   ARCHIVO: index.html
   QUÉ ES: Página principal de “Cálculo en Movimiento”.
-  PARA EXPLICAR: Es la estructura visible de la app: bienvenida, problema asignado
-  (función, intervalo, eje), botones de gestos 1–5, zona de gráfica, cámara y resultados.
-  Carga Plotly (2D), Three.js (sólidos 3D con partículas), MediaPipe (mano) y el
-  programa principal js/main.js. Sin este HTML no hay interfaz.
+  PARA EXPLICAR: Bienvenida, header institucional, 3 columnas
+  (problema 20% | gráfica+resultado 60% | cámara 20%) y pie con logo.
 -->
 <html lang="es">
 <head>
@@ -15,17 +13,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/tokens.css?v=20260920a" />
-  <link rel="stylesheet" href="css/layout.css?v=20260920a" />
-  <link rel="stylesheet" href="css/components.css?v=20260920a" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/tokens.css?v=20261012s" />
+  <link rel="stylesheet" href="css/layout.css?v=20261012s" />
+  <link rel="stylesheet" href="css/components.css?v=20261012s" />
 </head>
 <body class="layout-split">
   <div id="welcome-overlay" class="welcome-overlay">
     <div class="welcome-card">
-      <p class="brand-kicker">Proyecto de aula · Cálculo integral</p>
-      <h2 id="welcome-title">Bienvenida</h2>
-      <p id="welcome-body">Activa la cámara o usa los botones 1–5.</p>
+      <div class="welcome-brand">
+        <img
+          class="welcome-logo"
+          id="welcome-logo"
+          src="assets/brand/areandina-u.png?v=20261012f"
+          alt="Logo Areandina"
+          width="72"
+          height="72"
+        />
+        <p class="welcome-institution" id="welcome-institution">Fundación Universitaria del Área Andina</p>
+        <h2 class="welcome-course" id="welcome-course">Cálculo integral</h2>
+      </div>
+      <figure class="team-photo-wrap" id="welcome-team-photo-wrap" hidden>
+        <img id="welcome-team-photo" class="team-photo" alt="Equipo del proyecto" />
+      </figure>
       <div id="team-list" class="team-list"></div>
+      <p class="credit-line" id="welcome-professor"></p>
       <div class="welcome-actions">
         <button type="button" class="btn btn-primary" id="btn-start-camera">Activar cámara</button>
         <button type="button" class="btn btn-secondary" id="btn-skip-camera">Continuar sin cámara</button>
@@ -35,14 +47,24 @@
 
   <div class="app-shell">
     <header class="app-header">
-      <div class="brand">
-        <h1 id="product-name">Cálculo en Movimiento</h1>
-        <p id="product-tagline">Explora integrales con la mano</p>
-        <p class="result-note" id="team-line" style="margin-top:0.25rem"></p>
+      <div class="header-brand">
+        <img
+          class="header-logo"
+          id="header-logo"
+          src="assets/brand/areandina-u.png?v=20261012f"
+          alt="Logo Areandina"
+          width="56"
+          height="56"
+        />
+        <div class="brand">
+          <p class="brand-institution" id="header-institution">Fundación Universitaria del Área Andina</p>
+          <p class="brand-course" id="header-course">Cálculo integral</p>
+          <h1 class="brand-product" id="product-name">Cálculo en Movimiento</h1>
+          <p class="brand-tagline" id="product-tagline">Explora integrales con la mano</p>
+        </div>
       </div>
       <div class="header-actions">
         <button type="button" class="btn btn-primary" id="btn-camera">Activar cámara</button>
-        <button type="button" class="btn btn-secondary" id="btn-explain">Modo explicar</button>
         <button type="button" class="btn btn-ghost" id="btn-reset">Reiniciar</button>
       </div>
     </header>
@@ -54,110 +76,110 @@
     </div>
 
     <main class="main-grid">
-      <aside class="panel side-stack">
-        <section>
-          <h2>Problema asignado</h2>
-          <form id="assignment-form" class="field-grid" autocomplete="off">
+      <section class="panel pane-clear pane-assignment">
+        <h2>Problema asignado</h2>
+        <form id="assignment-form" class="field-grid" autocomplete="off">
+          <label>
+            Función f(x)
+            <input id="input-fn" name="fn" type="text" spellcheck="false" placeholder="ej. x^2  o  sin(x)" />
+          </label>
+          <div class="field-row">
             <label>
-              Función f(x)
-              <input id="input-fn" name="fn" type="text" spellcheck="false" placeholder="ej. x^2  o  sin(x)" />
+              a
+              <input id="input-a" name="a" type="number" step="any" />
             </label>
-            <div class="field-row">
-              <label>
-                a
-                <input id="input-a" name="a" type="number" step="any" />
-              </label>
-              <label>
-                b
-                <input id="input-b" name="b" type="number" step="any" />
-              </label>
-            </div>
             <label>
-              Eje de revolución
-              <select id="input-axis" name="axis">
-                <option value="x">eje x</option>
-                <option value="y">eje y</option>
-              </select>
+              b
+              <input id="input-b" name="b" type="number" step="any" />
             </label>
-            <button type="submit" class="btn btn-primary" id="btn-apply-assignment">Aplicar problema</button>
-          </form>
-          <p class="result-note" id="notes-display" style="margin-top:0.6rem"></p>
-          <p class="result-note">El día de la entrega escribe aquí lo que asigne la docente y pulsa <strong>Aplicar problema</strong>.</p>
-        </section>
-
-        <section>
-          <h2>Gestos (1–5)</h2>
-          <div class="gesture-grid" aria-label="Controles de gesto">
-            <button type="button" class="gesture-btn" data-mode="1"><strong>1</strong><span>Área</span></button>
-            <button type="button" class="gesture-btn" data-mode="2"><strong>2</strong><span>Vol. X</span></button>
-            <button type="button" class="gesture-btn" data-mode="3"><strong>3</strong><span>Vol. Y</span></button>
-            <button type="button" class="gesture-btn" data-mode="4"><strong>4</strong><span>Superficie</span></button>
-            <button type="button" class="gesture-btn" data-mode="5"><strong>5</strong><span>Arco</span></button>
           </div>
-          <p class="result-note" style="margin-top:0.55rem">También puedes usar las teclas 1–5. R = reiniciar.</p>
-          <div id="explain-box" class="explain-box"></div>
-        </section>
+          <label>
+            Eje de revolución
+            <select id="input-axis" name="axis">
+              <option value="x">eje x</option>
+              <option value="y">eje y</option>
+            </select>
+          </label>
+          <button type="submit" class="btn btn-primary" id="btn-apply-assignment">Aplicar problema</button>
+        </form>
+        <p class="result-note" id="notes-display" style="margin-top:0.6rem"></p>
+      </section>
 
-        <section>
-          <h2>Cómo usarlo</h2>
-          <ul class="instructions">
-            <li>Ingresa la función, [a, b] y el eje; pulsa Aplicar.</li>
-            <li>Cámara: gesto 1–5 (1.5 s) → <strong>puño</strong> → otro gesto.</li>
-            <li>Mano derecha, palma a la cámara. Botones 1–5 siempre disponibles.</li>
-            <li>Teclas 1–5 y R = reiniciar.</li>
-          </ul>
-        </section>
-      </aside>
-
-      <section class="center-stack">
-        <div class="panel">
-          <h2>Visualización</h2>
-          <div id="plot2d" class="plot-frame"></div>
-          <div id="plot3d" class="plot-frame hidden"></div>
+      <section class="pane-center">
+        <div class="center-stage">
+          <div class="pane-viz">
+            <h2>Visualización</h2>
+            <div id="plot2d" class="plot-frame"></div>
+            <div id="plot3d" class="plot-frame hidden"></div>
+          </div>
+          <div class="pane-result result-card">
+            <h2>Resultado</h2>
+            <div class="chip" id="result-concept">Elige un gesto o botón (1–5)</div>
+            <p id="result-title" style="font-weight:700">Sin cálculo aún</p>
+            <div class="result-formula" id="result-formula">—</div>
+            <div class="result-value" id="result-value">—</div>
+            <p class="result-note" id="result-method"></p>
+            <p class="result-note" id="result-note"></p>
+            <p class="result-note" id="result-error"></p>
+            <dl class="kv hidden" id="result-extra"></dl>
+          </div>
         </div>
       </section>
 
-      <aside class="panel side-stack">
-        <section>
-          <h2>Cámara</h2>
-          <div class="camera-wrap">
-            <video id="webcam" playsinline></video>
-            <canvas id="hand-canvas"></canvas>
-            <div id="camera-placeholder" class="camera-placeholder">
-              Cámara en espera.<br />Pulsa “Activar cámara”.
-            </div>
+      <section class="panel pane-clear pane-camera">
+        <h2>Cámara y uso</h2>
+        <div class="camera-wrap">
+          <video id="webcam" playsinline></video>
+          <canvas id="hand-canvas"></canvas>
+          <div id="camera-placeholder" class="camera-placeholder">
+            Cámara en espera.<br />Pulsa “Activar cámara”.
           </div>
-          <div class="camera-tips">
-            <strong>Cómo usar la cámara</strong>
-            <span>• Mano <em>derecha</em>, <em>palma</em> a la cámara, dedos arriba.</span>
-            <span>• Muestra 1–5 y sostén <em>1.5 s</em> (mira “Dedos en vivo”).</span>
-            <span>• Para cambiar: <em>puño</em> → luego el nuevo gesto.</span>
-            <span>• En 1–4 el pulgar va metido; en 5 abre también el pulgar.</span>
-          </div>
-        </section>
-
-        <section class="result-card">
-          <h2>Resultado</h2>
-          <div class="chip" id="result-concept">Elige un gesto o botón (1–5)</div>
-          <p id="result-title" style="font-weight:700">Sin cálculo aún</p>
-          <div class="result-formula" id="result-formula">—</div>
-          <div class="result-value" id="result-value">—</div>
-          <p class="result-note" id="result-method"></p>
-          <p class="result-note" id="result-note"></p>
-          <p class="result-note" id="result-error"></p>
-          <dl class="kv hidden" id="result-extra"></dl>
-        </section>
-      </aside>
+        </div>
+        <ul class="instructions camera-howto">
+          <li>Mano <strong>derecha</strong>, <strong>palma</strong> a la cámara.</li>
+          <li>Gesto 1–5 (1.5 s) → <strong>puño</strong> → otro.</li>
+          <li>Botones o teclas 1–5. R = reiniciar.</li>
+        </ul>
+        <div class="gesture-grid gesture-grid-narrow" aria-label="Controles de gesto">
+          <button type="button" class="gesture-btn" data-mode="1"><strong>1</strong><span>Área</span></button>
+          <button type="button" class="gesture-btn" data-mode="2"><strong>2</strong><span>Vol. X</span></button>
+          <button type="button" class="gesture-btn" data-mode="3"><strong>3</strong><span>Vol. Y</span></button>
+          <button type="button" class="gesture-btn" data-mode="4"><strong>4</strong><span>Área superf.</span></button>
+          <button type="button" class="gesture-btn" data-mode="5"><strong>5</strong><span>Arco</span></button>
+        </div>
+      </section>
     </main>
+
+    <footer class="app-footer" id="app-footer">
+      <div class="footer-brand-row">
+        <img
+          class="footer-logo"
+          id="footer-logo"
+          src="assets/brand/areandina-u.png?v=20261012f"
+          alt="Logo Areandina"
+          width="40"
+          height="40"
+        />
+        <div class="footer-brand">
+          <strong id="footer-institution">Fundación Universitaria del Área Andina</strong>
+          <span id="footer-course">Cálculo integral</span>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <span id="footer-professor"></span>
+        <span id="footer-team"></span>
+      </div>
+    </footer>
   </div>
 
   <div id="toast" class="toast" role="status"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/plotly.js@2.35.2/dist/plotly.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  <script type="module" src="js/main.js?v=20260920a"></script>
+  <script type="module" src="js/main.js?v=20261012v"></script>
 </body>
 </html>

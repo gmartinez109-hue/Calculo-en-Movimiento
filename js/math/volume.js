@@ -20,8 +20,8 @@ export function computeVolume(f, a, b, axis = "x", n = 800) {
     const value = Math.PI * res.value;
     return {
       mode: "volume_x",
-      title: "Volumen (revolución alrededor del eje x)",
-      concept: "Método de discos",
+      title: "Volumen eje x — sólido lleno (discos)",
+      concept: "Método de discos · sólido lleno",
       formula: "V = π ∫_a^b [f(x)]² dx",
       value,
       displayValue: value,
@@ -38,8 +38,8 @@ export function computeVolume(f, a, b, axis = "x", n = 800) {
   const value = 2 * Math.PI * res.value;
   return {
     mode: "volume_y",
-    title: "Volumen (revolución alrededor del eje y)",
-    concept: "Método de capas cilíndricas",
+    title: "Volumen eje y — sólido lleno (capas)",
+    concept: "Método de capas · sólido lleno",
     formula: "V = 2π ∫_a^b x f(x) dx",
     value,
     displayValue: value,
@@ -47,6 +47,6 @@ export function computeVolume(f, a, b, axis = "x", n = 800) {
     method: `Capas cilíndricas + Simpson (n=${res.n})`,
     estimateError: res.estimateError != null ? 2 * Math.PI * res.estimateError : null,
     axis: "y",
-    note: "Para capas se asume interpretación estándar con radio x y altura f(x). Si la docente pide arandelas en y, se documenta el cambio de variable.",
+    note: "Capas: radio x y altura f(x).",
   };
 }

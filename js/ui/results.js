@@ -1,10 +1,14 @@
 /**
  * ARCHIVO: js/ui/results.js
- * QUÉ ES: Panel de “Resultado” (fórmula, valor, unidades, notas).
- * PARA EXPLICAR: Muestra lo que la profesora quiere ver: concepto, integral,
- * número con unidades y, en el área, integral con signo vs área geométrica.
- * Es la parte más importante para la exposición de cálculo.
+ * QUÉ ES: Panel de “Resultado” con KaTeX.
+ * PARA EXPLICAR: Muestra f(x) real, la integral tipográfica y el valor numérico
+ * con unidades — lo que la profesora quiere ver en la demo.
  */
+import {
+  buildModeLatex,
+  renderKatex,
+} from "../math/latex.js";
+
 function formatNumber(value) {
   if (!Number.isFinite(value)) return "—";
   const abs = Math.abs(value);
@@ -12,44 +16,52 @@ function formatNumber(value) {
   return value.toLocaleString("es-CO", { maximumFractionDigits: 6 });
 }
 
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
 export function renderResults(result, assignment) {
   const units = assignment.units?.[result.unitsKey] || "";
-  document.getElementById("result-title").textContent = result.title;
-  document.getElementById("result-concept").textContent = result.concept;
-  document.getElementById("result-formula").textContent = result.formula;
-  document.getElementById("result-value").textContent =
-    `${formatNumber(result.displayValue)} ${units}`.trim();
-  document.getElementById("result-method").textContent = result.method || "";
-  document.getElementById("result-note").textContent = result.note || "";
+  setText("result-title", result.title);
+  setText("result-concept", result.concept);
+
+  const formulaLatex = buildModeLatex(result, assignment);
+  renderKatex(document.getElementById("result-formula"), formulaLatex, true);
+
+  const valueText = `${formatNumber(result.displayValue)} ${units}`.trim();
+  setText("result-value", valueText);
+  setText("result-method", result.method || "");
+  setText("result-note", result.note || "");
 
   const extra = document.getElementById("result-extra");
-  if (result.mode === "area") {
+  if (result.mode === "area" && extra) {
     extra.innerHTML = `
       <div><dt>Integral con signo</dt><dd>${formatNumber(result.signedIntegral)} ${units}</dd></div>
       <div><dt>Área geométrica</dt><dd>${formatNumber(result.geometricArea)} ${units}</dd></div>
       <div><dt>Raíces detectadas</dt><dd>${result.roots?.length ? result.roots.map(formatNumber).join(", ") : "ninguna"}</dd></div>
     `;
     extra.classList.remove("hidden");
-  } else {
+  } else if (extra) {
     extra.innerHTML = "";
     extra.classList.add("hidden");
   }
 
   if (result.estimateError != null) {
-    document.getElementById("result-error").textContent =
-      `Error estimado (n vs 2n): ${formatNumber(result.estimateError)}`;
+    setText("result-error", `Error estimado (n vs 2n): ${formatNumber(result.estimateError)}`);
   } else {
-    document.getElementById("result-error").textContent = "";
+    setText("result-error", "");
   }
 }
 
 export function clearResults() {
-  document.getElementById("result-title").textContent = "Sin cálculo aún";
-  document.getElementById("result-concept").textContent = "Elige un gesto o botón (1–5)";
-  document.getElementById("result-formula").textContent = "—";
-  document.getElementById("result-value").textContent = "—";
-  document.getElementById("result-method").textContent = "";
-  document.getElementById("result-note").textContent = "";
-  document.getElementById("result-error").textContent = "";
-  document.getElementById("result-extra").classList.add("hidden");
+  setText("result-title", "Sin cálculo aún");
+  setText("result-concept", "Elige un gesto o botón (1–5)");
+  const formulaEl = document.getElementById("result-formula");
+  if (formulaEl) formulaEl.textContent = "—";
+  setText("result-value", "—");
+  setText("result-method", "");
+  setText("result-note", "");
+  setText("result-error", "");
+  document.getElementById("result-extra")?.classList.add("hidden");
 }

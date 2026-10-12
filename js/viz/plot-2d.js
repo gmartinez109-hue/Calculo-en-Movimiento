@@ -49,8 +49,8 @@ export function renderPlot2D(assignment, modeResult, targetId = "plot2d") {
 
   const layout = {
     margin: { l: 50, r: 20, t: 30, b: 45 },
-    paper_bgcolor: "rgba(0,0,0,0)",
-    plot_bgcolor: "rgba(255,255,255,0.65)",
+    paper_bgcolor: "rgba(247, 234, 243, 0.55)",
+    plot_bgcolor: "rgba(247, 234, 243, 0.35)",
     title: { text: modeResult?.title || "Gráfica 2D", font: { size: 14 } },
     xaxis: { title: "x", zeroline: true },
     yaxis: { title: "y", zeroline: true },

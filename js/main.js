@@ -4,7 +4,7 @@
  * PARA EXPLICAR: Arranca el programa, carga el problema y el tema visual, conecta
  * la cámara/gestos con los cálculos y las gráficas. Cuando eliges un gesto (1–5)
  * o un botón, aquí se pide el resultado matemático y se actualiza la pantalla.
- * También permite aplicar una nueva función el día de la entrega y reiniciar.
+ * También permite aplicar una nueva función y reiniciar.
  */
 import { loadConfig, applyTheme } from "./config-loader.js";
 import { runMode, MODES, sampleCurve } from "./math/index.js";
@@ -22,12 +22,10 @@ import {
   saveAssignmentLocal,
 } from "./ui/shell.js";
 import { renderResults, clearResults } from "./ui/results.js";
-import { setExplainMode, updateExplainForMode } from "./ui/instructions.js";
 
 let assignment = null;
 let theme = null;
 let currentMode = null;
-let explainOn = false;
 let gestureEngine = null;
 
 function setStatus(text) {
@@ -42,7 +40,6 @@ function applyMode(mode, source = "manual") {
     setActiveMode(mode);
     renderResults(result, assignment);
     showPlotForMode(mode, assignment, result);
-    updateExplainForMode(mode, explainOn);
     showToast(
       source === "gesture"
         ? `Gesto confirmado: ${mode} → ${MODES[mode].short}`
@@ -122,6 +119,8 @@ async function boot() {
   const cfg = await loadConfig();
   theme = cfg.theme;
   assignment = loadAssignmentLocal(cfg.assignment);
+  // Notas de UI siempre desde config (producto final; evita texto viejo en localStorage)
+  assignment.notes = cfg.assignment.notes || "";
   applyTheme(theme);
 
   sampleCurve(assignment, 10);
@@ -139,12 +138,6 @@ async function boot() {
     onSkipCamera: skipCamera,
     onReset: resetApp,
     onApplyAssignment: applyAssignment,
-    onToggleExplain: () => {
-      explainOn = !explainOn;
-      setExplainMode(explainOn, currentMode || 1);
-      document.getElementById("btn-explain").classList.toggle("btn-primary", explainOn);
-      document.getElementById("btn-explain").classList.toggle("btn-secondary", !explainOn);
-    },
   });
 
   clearResults();

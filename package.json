@@ -6,5 +6,33 @@
   "scripts": {
     "start": "npx --yes serve -l 5173",
     "check:math": "node scripts/check-math.mjs"
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmartinez109-hue/Calculo-en-Movimiento.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gmartinez109-hue/Calculo-en-Movimiento/issues"
+  },
+  "homepage": "https://github.com/gmartinez109-hue/Calculo-en-Movimiento#readme",
+  "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "@imgly/background-removal-node": "^1.4.5",
+    "puppeteer": "^25.13.0",
+    "sharp": "^0.35.5"
+  },
+  "allowScripts": {
+    "sharp@0.32.6": true,
+    "onnxruntime-node@1.17.3": true,
+    "protobufjs@7.6.6": true,
+    "puppeteer@25.13.0": true
   }
 }

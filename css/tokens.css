@@ -6,11 +6,11 @@
  * desde config-loader sin tocar la matemática.
  */
 :root {
-  --bg: #faf6f8;
-  --bg-soft: #fff7fb;
-  --surface: #ffffff;
+  --bg: #f3e6ef;
+  --bg-soft: #f7eaf3;
+  --surface: rgba(255, 255, 255, 0.55);
   --ink: #3a2f36;
-  --muted: #7a6570;
+  --muted: #6b5562;
   --blush: #e8a4b8;
   --blush-deep: #d4789a;
   --lavender: #c9b6e4;
@@ -20,8 +20,8 @@
   --accent-2: #9b7bb8;
   --success: #5a9e7a;
   --danger: #c45c6a;
-  --border: rgba(212, 120, 154, 0.22);
-  --shadow: rgba(90, 50, 70, 0.08);
+  --border: rgba(212, 120, 154, 0.28);
+  --shadow: rgba(90, 50, 70, 0.12);
   --plot-fill: rgba(212, 120, 154, 0.35);
   --plot-line: #d4789a;
   --plot-arc: #9b7bb8;
@@ -30,6 +30,7 @@
   --font-display: "Nunito", "Segoe UI", sans-serif;
   --font-body: "Nunito", "Segoe UI", sans-serif;
   --font-math: "Cambria Math", "Times New Roman", serif;
+  --bg-concepto: url("../assets/brand/bg-concepto.jpg?v=20261012s");
 }
 
 * {
@@ -46,11 +47,16 @@ body {
 body {
   font-family: var(--font-body);
   color: var(--ink);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(232, 164, 184, 0.35), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(201, 182, 228, 0.28), transparent 50%),
-    linear-gradient(180deg, var(--bg-soft), var(--bg));
+  background-color: #c8b4d6;
+  background-image:
+    linear-gradient(180deg, rgba(255, 247, 251, 0.28), rgba(243, 230, 239, 0.42)),
+    var(--bg-concepto);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   line-height: 1.45;
+  min-height: 100vh;
 }
 
 button,

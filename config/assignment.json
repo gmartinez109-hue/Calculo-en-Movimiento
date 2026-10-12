@@ -9,7 +9,7 @@
     "surface": "u²",
     "arc": "u"
   },
-  "notes": "Ejemplo editable en pantalla. El día de la entrega escribe la función, [a,b] y el eje que asigne la docente y pulsa Aplicar problema.",
+  "notes": "Escribe la función, [a, b] y el eje, y pulsa Aplicar problema.",
   "displayLatex": "f(x) = x^{2}",
   "nIntervals": 800
 }

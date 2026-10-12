@@ -14,9 +14,9 @@ import { computeArcLength } from "./arc-length.js";
 
 export const MODES = {
   1: { id: "area", label: "Área", short: "Área bajo la curva" },
-  2: { id: "volume_x", label: "Vol. X", short: "Volumen eje x" },
-  3: { id: "volume_y", label: "Vol. Y", short: "Volumen eje y" },
-  4: { id: "surface", label: "Superficie", short: "Área superficial" },
+  2: { id: "volume_x", label: "Vol. X", short: "Volumen eje x (lleno)" },
+  3: { id: "volume_y", label: "Vol. Y", short: "Volumen eje y (lleno)" },
+  4: { id: "surface", label: "Área superficial", short: "Área superficial" },
   5: { id: "arc", label: "Arco", short: "Longitud de arco" },
 };
 

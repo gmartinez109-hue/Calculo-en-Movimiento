@@ -19,9 +19,14 @@
 ## Pendiente hacia entrega final
 
 - Sustituir la función de ejemplo por la asignada oficialmente
-- Migrar el repo al GitHub colaborativo del grupo
-- Incorporar observaciones de la docente tras la demo del prototipo
 - Ensayar el guion con las tres integrantes
+- Probar en demo los gestos 2/3/4 (lleno vs cascarón) ante la docente
+
+## Ya incorporado tras feedback Entrega 2
+
+- Foto del equipo + branding Areandina / docente Dellerlin Cepeda
+- Franja de resultados con KaTeX y f(x) real
+- Diferenciación visual 2–3 (sólido lleno) vs 4 (cascarón)
 
 ## Cambios vs diseño Entrega 1
 
