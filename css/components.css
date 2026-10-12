@@ -152,33 +152,50 @@
 
 .result-card {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.25rem;
+}
+
+.result-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.65rem;
+}
+
+.result-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
 }
 
 .result-value {
-  font-size: 1.55rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--blush-deep);
+  line-height: 1.2;
 }
 
 .result-formula {
   font-family: var(--font-math);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--ink);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.28);
   border: none;
-  border-radius: 12px;
-  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  padding: 0.35rem 0.55rem;
   overflow-x: auto;
 }
 
 .result-formula .katex {
-  font-size: 1.08em;
+  font-size: 1.02em;
 }
 
 .result-note {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--muted);
+  margin: 0;
+  line-height: 1.3;
 }
 
 .instructions {
@@ -210,9 +227,10 @@
 .status-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.35rem;
   align-items: center;
   justify-content: space-between;
+  margin: 0;
 }
 
 .welcome-overlay {
